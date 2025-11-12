@@ -68,7 +68,7 @@ export default function PostEditor() {
       .from('posts')
       .select('*')
       .eq('id', id)
-      .single();
+      .maybeSingle();
 
     if (error) {
       toast({
@@ -77,12 +77,25 @@ export default function PostEditor() {
         variant: 'destructive',
       });
       navigate('/admin/posts');
-    } else {
-      setFormData({
-        ...data,
-        publish_at: data.publish_at ? new Date(data.publish_at).toISOString().slice(0, 16) : '',
-      });
+      setLoading(false);
+      return;
     }
+
+    if (!data) {
+      toast({
+        title: 'Post not found or access denied',
+        description: 'It may be a draft you do not own or the post does not exist.',
+        variant: 'destructive',
+      });
+      navigate('/admin/posts');
+      setLoading(false);
+      return;
+    }
+
+    setFormData({
+      ...data,
+      publish_at: data.publish_at ? new Date(data.publish_at).toISOString().slice(0, 16) : '',
+    });
     setLoading(false);
   };
 

@@ -116,7 +116,7 @@ export default function PostList() {
     const defaultTitle = 'Untitled';
     const defaultSlug = `untitled-${Date.now()}`;
 
-    const { data, error } = await supabase
+  const { data, error } = await supabase
       .from('posts')
       .insert([{
         title: defaultTitle,
@@ -142,6 +142,16 @@ export default function PostList() {
           : error.message,
         variant: 'destructive',
       });
+      return;
+    }
+
+    if (!data || !data.id) {
+      toast({
+        title: 'Draft creation incomplete',
+        description: 'Post was created but could not retrieve its ID. Please refresh the list.',
+        variant: 'destructive',
+      });
+      fetchPosts();
       return;
     }
 
